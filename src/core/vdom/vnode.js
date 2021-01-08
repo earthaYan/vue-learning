@@ -4,11 +4,14 @@
  * 描述一个 DOM 节点，
  * 所以它比创建一个 DOM 的代价要小很多
  */
+//只是用来映射到真实 DOM 的渲染，
+// 不需要包含操作 DOM 的方法，因此非常轻量和简单的
 export default class VNode {
-  tag: string | void;
-  data: VNodeData | void;
-  children: ?Array<VNode>;
-  text: string | void;
+  // vNode对真实 DOM 的一种抽象描述
+  tag: string | void;//标签名
+  data: VNodeData | void;//数据
+  children: ?Array<VNode>;//子节点
+  text: string | void;//文本
   elm: Node | void;
   ns: string | void;
   context: Component | void; // rendered in this component's scope
@@ -34,12 +37,12 @@ export default class VNode {
   fnScopeId: ?string; // functional scope id support
 
   constructor (
-    tag?: string,
-    data?: VNodeData,
-    children?: ?Array<VNode>,
+    tag?: string, //标签名
+    data?: VNodeData,//数据
+    children?: ?Array<VNode>,//子节点
     text?: string,
     elm?: Node,
-    context?: Component,
+    context?: Component,//上下文
     componentOptions?: VNodeComponentOptions,
     asyncFactory?: Function
   ) {

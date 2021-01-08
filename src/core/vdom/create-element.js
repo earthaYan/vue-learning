@@ -33,6 +33,7 @@ export function createElement (
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
+  // 对传入的参数进行处理
   if (Array.isArray(data) || isPrimitive(data)) {
     normalizationType = children
     children = data
@@ -41,15 +42,22 @@ export function createElement (
   if (isTrue(alwaysNormalize)) {
     normalizationType = ALWAYS_NORMALIZE
   }
+  /**
+   * 二次封装了_createElement方法，允许传入的参数更加灵活
+   * 处理完参数以后，才会调用真正创建VNode的方法_createElement
+  **/
+
   return _createElement(context, tag, data, children, normalizationType)
 }
 
 export function _createElement (
-  context: Component,
-  tag?: string | Class<Component> | Function | Object,
-  data?: VNodeData,
-  children?: any,
-  normalizationType?: number
+  context: Component,   //vNode的上下文环境
+  tag?: string | Class<Component> | Function | Object,//标签
+  data?: VNodeData,//当前vNode的数据
+  children?: any,//当前vNode的子节点,需要规范成vNode类型
+  // 类型不同规范的方法也就不一样，
+  // 主要是参考 render 函数是编译_c生成的还是用户手写$createment的。
+  normalizationType?: number //子节点规范的类型
 ): VNode | Array<VNode> {
   if (isDef(data) && isDef((data: any).__ob__)) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -59,7 +67,7 @@ export function _createElement (
     )
     return createEmptyVNode()
   }
-  // object syntax in v-bind
+  // object syntax in v-bind v-bind绑定语法
   if (isDef(data) && isDef(data.is)) {
     tag = data.is
   }
@@ -87,31 +95,39 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
-  if (normalizationType === ALWAYS_NORMALIZE) {
+  // 根据normalizationType的值不同调用了不同的方法.
+  // 具体方法实现见help/normalize-children.js文件
+  if (normalizationType === ALWAYS_NORMALIZE) {//ALWAYS_NORMALIZE----2
     children = normalizeChildren(children)
-  } else if (normalizationType === SIMPLE_NORMALIZE) {
+  } else if (normalizationType === SIMPLE_NORMALIZE) {//SIMPLE_NORMALIZE----1
     children = simpleNormalizeChildren(children)
   }
+  // /==================规范化子节点结束============================================
   let vnode, ns
+  // 判断tag类型
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
     if (config.isReservedTag(tag)) {
-      // platform built-in elements
+      // 如果是平台内置节点
+      // platform built-in elements 
       if (process.env.NODE_ENV !== 'production' && isDef(data) && isDef(data.nativeOn)) {
         warn(
           `The .native modifier for v-on is only valid on components but it was used on <${tag}>.`,
           context
         )
       }
+      // 创建一个普通vNode
       vnode = new VNode(
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       )
     } else if ((!data || !data.pre) && isDef(Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
+      // 如果是已注册的组件名：创建一个组件类型的vNode
       vnode = createComponent(Ctor, data, context, children, tag)
     } else {
+      // 创建一个未知的标签的 VNode
       // unknown or unlisted namespaced elements
       // check at runtime because it may get assigned a namespace when its
       // parent normalizes children

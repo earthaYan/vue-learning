@@ -69,8 +69,8 @@ export function renderMixin (Vue: Class<Component>) {
     return nextTick(fn, this)
   }
   /**
-   * 属于实例的私有方法
    * 作用：把实例渲染成一个虚拟 Node
+   * 最终通过执行 createElement 方法并返回的是 vnode
    */
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
@@ -94,6 +94,7 @@ export function renderMixin (Vue: Class<Component>) {
       // separately from one another. Nested component's render fns are called
       // when parent component is patched.
       currentRenderingInstance = vm
+      // 调用render方法,参数2就是initRender中的33，37
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)
@@ -126,6 +127,7 @@ export function renderMixin (Vue: Class<Component>) {
           vm
         )
       }
+      // 返回空节点
       vnode = createEmptyVNode()
     }
     // set parent

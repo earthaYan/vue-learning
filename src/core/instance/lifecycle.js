@@ -164,6 +164,7 @@ export function mountComponent (
       }
     }
   }
+  // 调用beforeMount钩子函数
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -197,13 +198,14 @@ export function mountComponent (
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
   /**
+   * 实例化一个渲染Watcher
    * 1.初始化的时候会执行回调函数
    * 2.当 vm 实例中的监测的数据发生变化的时候执行回调函数，
    */
   new Watcher(vm, updateComponent, noop, {
-    // 回调函数
     before () {
       if (vm._isMounted && !vm._isDestroyed) {
+        // 调用beforeUpdate钩子函数
         callHook(vm, 'beforeUpdate')
       }
     }
@@ -213,9 +215,11 @@ export function mountComponent (
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
   // vm.$vnode 表示 Vue 实例的父虚拟 Node
+  // null表示当前是根 Vue 的实例
   if (vm.$vnode == null) {
-    // 表示当前是根 Vue 的实例
+    //设置_isMounted为true表明实例已经挂载
     vm._isMounted = true
+    // 挂载以后调用mounted钩子函数
     callHook(vm, 'mounted')
   }
   return vm

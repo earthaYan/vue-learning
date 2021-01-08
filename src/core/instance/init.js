@@ -13,6 +13,9 @@ import { extend, mergeOptions, formatComponentName } from '../util/index'
 let uid = 0
 
 export function initMixin (Vue: Class<Component>) {
+  /** 初始化逻辑把不同的功能逻辑拆成一些单独的函数执行，
+   * 让主线逻辑一目了然
+   * */
   Vue.prototype._init = function (options?: Object) {
     const vm: Component = this
     // a uid
@@ -28,7 +31,7 @@ export function initMixin (Vue: Class<Component>) {
 
     // a flag to avoid this being observed
     vm._isVue = true
-    // merge options
+    // merge options 合并配置
     if (options && options._isComponent) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
@@ -49,14 +52,14 @@ export function initMixin (Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
-    initLifecycle(vm)
-    initEvents(vm)
-    initRender(vm)
-    callHook(vm, 'beforeCreate')
+    initLifecycle(vm) //初始化生命周期
+    initEvents(vm) //初始化事件中心
+    initRender(vm)   //初始化渲染
+    callHook(vm, 'beforeCreate')  //调用beforecreate钩子函数
     initInjections(vm) // resolve injections before data/props
-    initState(vm)
+    initState(vm) //初始化data,proops,watcher,computed
     initProvide(vm) // resolve provide after data/props
-    callHook(vm, 'created')
+    callHook(vm, 'created')  //调用钩子函数created
 
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
@@ -64,7 +67,8 @@ export function initMixin (Vue: Class<Component>) {
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
-
+    // 如果有el属性，则调用$mount方法挂载vm到el上
+    // 把模板渲染成最终的DOM
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }
