@@ -1,5 +1,9 @@
 /* @flow */
-
+/**
+ *  Virtual DOM 是用一个原生的 JS 对象[vue中用VNode描述]
+ * 描述一个 DOM 节点，
+ * 所以它比创建一个 DOM 的代价要小很多
+ */
 export default class VNode {
   tag: string | void;
   data: VNodeData | void;

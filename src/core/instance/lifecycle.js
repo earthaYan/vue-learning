@@ -15,7 +15,7 @@ import {
   remove,
   emptyObject,
   validateProp,
-  invokeWithErrorHandling
+  invokeWithErrorHandling 
 } from '../util/index'
 
 export let activeInstance: any = null
@@ -176,11 +176,13 @@ export function mountComponent (
       const endTag = `vue-perf-end:${id}`
 
       mark(startTag)
+      // 调用_render生成虚拟 Node,把实例渲染成一个虚拟 Node
       const vnode = vm._render()
       mark(endTag)
       measure(`vue ${name} render`, startTag, endTag)
 
       mark(startTag)
+      // 调用_update更新DOM
       vm._update(vnode, hydrating)
       mark(endTag)
       measure(`vue ${name} patch`, startTag, endTag)
@@ -194,7 +196,12 @@ export function mountComponent (
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
+  /**
+   * 1.初始化的时候会执行回调函数
+   * 2.当 vm 实例中的监测的数据发生变化的时候执行回调函数，
+   */
   new Watcher(vm, updateComponent, noop, {
+    // 回调函数
     before () {
       if (vm._isMounted && !vm._isDestroyed) {
         callHook(vm, 'beforeUpdate')
@@ -205,7 +212,9 @@ export function mountComponent (
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
+  // vm.$vnode 表示 Vue 实例的父虚拟 Node
   if (vm.$vnode == null) {
+    // 表示当前是根 Vue 的实例
     vm._isMounted = true
     callHook(vm, 'mounted')
   }
